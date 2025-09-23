@@ -1,13 +1,22 @@
 services:
-  rails_auth:
+  app:
+    &app
     build:
       context: .
       dockerfile: Dockerfile
+      args: 
+        APP_USER_ID: ${APP_USER_ID}
     container_name: rails_auth
     volumes:
-      - .:/app
+      - .:/home/auth_app_user/auth_app:cached
       - bundle_cache:/usr/local/bundle
-      - rails_auth_tmp:/app/tmp
+      - ~/.ssh:/home/auth_app_user/.ssh
+      - ~/.gnupg:/home/auth_app_user/.gnupg
+      - bundle:/bundle
+      - rails_cache:/home/auth_app_user/auth_app/tmp/cache
+      - ~/.gitconfig:/etc/gitconfig
+    tmpfs:
+      - /tmp/auth_app
     ports:
       - "3000:3000"
     depends_on:
@@ -17,8 +26,10 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    environment:
-      - RAILS_ENV=development
+    entrypoint: [ "/home/auth_app_user/auth_app/entrypoint.sh" ]
+    command: [ "rails", "server", "-b", "0.0.0.0", "-p", "3000" ]
+    stdin_open: true
+    tty: true
 
   rails_auth_db:
     image: postgres:15
@@ -61,3 +72,6 @@ volumes:
   test_rails_auth_db_data:
   rails_auth_tmp:
   bundle_cache:
+  bundle:
+  rails_cache:
+  rails_tmp:
