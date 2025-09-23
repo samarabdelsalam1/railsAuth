@@ -1,0 +1,63 @@
+services:
+  rails_auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rails_auth
+    volumes:
+      - .:/app
+      - bundle_cache:/usr/local/bundle
+      - rails_auth_tmp:/app/tmp
+    ports:
+      - "3000:3000"
+    depends_on:
+      rails_auth_db:
+        condition: service_healthy
+      test_rails_auth_db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - RAILS_ENV=development
+
+  rails_auth_db:
+    image: postgres:15
+    container_name: rails_auth_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - rails_auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  test_rails_auth_db:
+    image: postgres:15
+    container_name: test_rails_auth_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_TEST_DB}
+    volumes:
+      - test_rails_auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_TEST_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  rails_auth_db_data:
+  test_rails_auth_db_data:
+  rails_auth_tmp:
+  bundle_cache:
