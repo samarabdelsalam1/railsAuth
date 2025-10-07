@@ -23,4 +23,12 @@
   </div>
 <% end %>
 
+<div style="text-align: center; margin-top: 20px;">
+ <%= link_to user_google_oauth2_omniauth_authorize_path, method: :post, class: "btn-google" do %>
+  <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="20" style="margin-right:8px;">
+  Sign in with Google
+<% end %>
+
+</div>
+
 <%= render "devise/shared/links" %>
