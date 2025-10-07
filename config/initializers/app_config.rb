@@ -1,0 +1,1 @@
+APP_CONFIG = Rails.application.config_for(:config).deep_symbolize_keys
