@@ -73,7 +73,7 @@ jobs:
 
     env:
       RAILS_ENV: test
-      POSTGRES_DB: rails_auth_test
+      POSTGRES_TEST_DB: rails_auth_test
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST: localhost
