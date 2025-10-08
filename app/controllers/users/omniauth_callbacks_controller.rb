@@ -14,8 +14,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   private
 
   def handle_auth(kind)
-    @user = User.from_omniauth(request.env["omniauth.auth"])
-
+    @user = Users::OmniauthService.new(request.env["omniauth.auth"]).call
     if @user.persisted?
       sign_in_and_redirect @user, event: :authentication
       set_flash_message(:notice, :success, kind: kind) if is_navigational_format?

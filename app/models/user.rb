@@ -9,25 +9,4 @@ class User < ApplicationRecord
     def password_required?
       authentications.empty? && super
     end
-
-def self.from_omniauth(auth)
-    authentication = Authentication.find_by(provider: auth.provider, uid: auth.uid)
-
-    if authentication
-      authentication.user
-    else
-      user = User.find_or_create_by(email: auth.info.email) do |u|
-        u.password = Devise.friendly_token[0, 20]
-        u.name = auth.info.name
-      end
-
-      user.authentications.create(
-        provider: auth.provider,
-        uid: auth.uid
-      )
-
-      user
-    end
-  end
-
 end
