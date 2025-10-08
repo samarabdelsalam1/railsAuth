@@ -9,7 +9,7 @@ module Users
     end
 
     attr_reader :auth
-   
+
     private
 
     def find_or_create_user
